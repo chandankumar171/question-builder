@@ -1,0 +1,471 @@
+.builder-page {
+  max-width: 820px;
+  margin: 0 auto;
+}
+
+.builder-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.back-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: none;
+  color: var(--ink-muted);
+  font-size: 0.9rem;
+  font-weight: 500;
+  padding: 8px 12px;
+  border-radius: 8px;
+  transition: all var(--transition);
+  font-family: var(--font-body);
+}
+
+.back-btn:hover {
+  background: var(--cream-dark);
+  color: var(--ink);
+}
+
+.builder-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.set-name-field {
+  margin-bottom: 2rem;
+}
+
+.set-name-field label {
+  display: block;
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-muted);
+  margin-bottom: 8px;
+}
+
+.set-name-input {
+  width: 100%;
+  padding: 14px 18px;
+  border: 2px solid var(--cream-dark);
+  border-radius: var(--radius);
+  font-size: 1.2rem;
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--ink);
+  background: var(--white);
+  transition: border-color var(--transition);
+  outline: none;
+}
+
+.set-name-input:focus {
+  border-color: var(--gold);
+}
+
+.set-name-input::placeholder {
+  color: #ccc;
+  font-weight: 400;
+}
+
+.questions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.no-questions {
+  text-align: center;
+  padding: 3rem;
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  border: 2px dashed var(--cream-dark);
+  color: var(--ink-muted);
+}
+
+.question-card {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-sm);
+  border: 2px solid transparent;
+  transition: border-color var(--transition);
+}
+
+.question-card.normal { border-left: 4px solid var(--gold); }
+.question-card.mcq { border-left: 4px solid var(--teal); }
+
+.question-card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 1.25rem;
+}
+
+.q-number-badge {
+  width: 30px;
+  height: 30px;
+  background: var(--ink);
+  color: var(--cream);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.q-type-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 99px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.q-type-badge.normal { background: var(--gold-pale); color: #8a6820; }
+.q-type-badge.mcq { background: #e0f5f5; color: var(--teal); }
+
+.q-header-actions {
+  margin-left: auto;
+  display: flex;
+  gap: 6px;
+}
+
+.q-header-actions .icon-btn {
+  width: 32px;
+  height: 32px;
+  background: var(--cream);
+  border-radius: 7px;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink-muted);
+  transition: all var(--transition);
+}
+
+.q-header-actions .icon-btn:hover:not(:disabled) {
+  background: var(--cream-dark);
+  color: var(--ink);
+}
+
+.q-header-actions .icon-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.q-header-actions .icon-btn.delete:hover {
+  background: #fdecea;
+  color: var(--red);
+}
+
+.field-group {
+  margin-bottom: 1rem;
+}
+
+.field-group label {
+  display: block;
+  font-size: 0.83rem;
+  font-weight: 600;
+  color: var(--ink-muted);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.required { color: var(--red); }
+.optional { color: #bbb; font-weight: 400; text-transform: none; letter-spacing: 0; font-size: 0.8rem; }
+
+.q-textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1.5px solid var(--cream-dark);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  color: var(--ink);
+  background: var(--cream);
+  resize: vertical;
+  transition: border-color var(--transition);
+  outline: none;
+  line-height: 1.5;
+}
+
+.q-textarea:focus {
+  border-color: var(--gold);
+  background: var(--white);
+}
+
+/* MCQ Options */
+.mcq-options label {
+  display: block;
+  font-size: 0.83rem;
+  font-weight: 600;
+  color: var(--ink-muted);
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.options-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.option-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px;
+  border-radius: 10px;
+  transition: background var(--transition);
+}
+
+.option-row.correct {
+  background: #f0faf5;
+}
+
+.option-selector {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2px solid var(--cream-dark);
+  background: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all var(--transition);
+  color: var(--ink-muted);
+}
+
+.option-selector:hover {
+  border-color: var(--teal);
+  color: var(--teal);
+}
+
+.option-selector.selected {
+  background: var(--green);
+  border-color: var(--green);
+  color: white;
+}
+
+.option-key {
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.option-input {
+  flex: 1;
+  padding: 10px 14px;
+  border: 1.5px solid var(--cream-dark);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-size: 0.93rem;
+  color: var(--ink);
+  background: var(--cream);
+  outline: none;
+  transition: border-color var(--transition);
+}
+
+.option-input:focus {
+  border-color: var(--teal-light);
+  background: var(--white);
+}
+
+.answer-preview {
+  margin-top: 10px;
+  padding: 8px 14px;
+  background: #f0faf5;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  color: var(--green);
+  border-left: 3px solid var(--green);
+}
+
+.answer-hint {
+  margin-top: 8px;
+  font-size: 0.8rem;
+  color: #bbb;
+  font-style: italic;
+}
+
+/* Add question bar */
+.add-question-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 1.25rem 1.5rem;
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  border: 2px dashed var(--cream-dark);
+  flex-wrap: wrap;
+  position: sticky;
+  bottom: 1.5rem;
+  box-shadow: var(--shadow-md);
+}
+
+.add-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--ink-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.add-btn {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 18px;
+  border-radius: 9px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  font-family: var(--font-body);
+  transition: all var(--transition);
+  border: none;
+}
+
+.add-btn.normal {
+  background: var(--gold-pale);
+  color: #8a6820;
+}
+
+.add-btn.normal:hover {
+  background: var(--gold-light);
+}
+
+.add-btn.mcq {
+  background: #e0f5f5;
+  color: var(--teal);
+}
+
+.add-btn.mcq:hover {
+  background: #c8eeee;
+}
+
+@media (max-width: 600px) {
+  .add-question-bar { bottom: 0.5rem; }
+}
+
+/* ── Math keyboard toggle ─────────────────────────────────────── */
+.math-input-wrapper {
+  width: 100%;
+}
+
+.input-with-icon {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+/* Hide without unmounting — prevents other fields losing their value/spaces */
+.field-hidden {
+  display: none !important;
+}
+
+.mathlive-hidden {
+  display: none !important;
+}
+
+.mathlive-field {
+  flex: 1;
+  min-height: 56px;
+  padding: 10px 12px;
+  border: 1.5px solid var(--teal-light);
+  border-radius: var(--radius-sm);
+  background: var(--white);
+  font-size: 1rem;
+  --caret-color: var(--teal);
+  --selection-background-color: #e0f5f5;
+}
+
+.math-toggle-btn {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: var(--cream);
+  border: 1.5px solid var(--cream-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink-muted);
+  transition: all var(--transition);
+  margin-top: 2px;
+}
+
+.math-toggle-btn:hover {
+  background: #e0f5f5;
+  border-color: var(--teal-light);
+  color: var(--teal);
+}
+
+.math-toggle-btn.active {
+  background: var(--teal);
+  border-color: var(--teal);
+  color: white;
+}
+
+/* ── End Math keyboard toggle ─────────────────────────────────────── */
+.math-toggle-btn {
+  align-self: flex-end; /* right align */
+  padding: 6px 12px;
+  font-size: 13px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  background: #f9f9f9;
+  cursor: pointer;
+}
+
+.math-toggle-btn.active {
+  background: #eef3ff;
+  border-color: #7aa2ff;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .math-toggle-btn {
+    align-self: stretch; /* full width on mobile */
+    text-align: center;
+  }
+}
+
+/* ── Shared styles with PreviewPage ─────────────────────────────────────── */
+.q-textarea,
+.math-field {
+  width: 100%;
+  height: 48px; /* 🔥 important */
+  min-height: 48px;
+  max-height: 48px;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.math-field * {
+  max-height: 100%;
+  overflow: hidden;
+}
+
+@media (max-width: 768px) {
+  .q-textarea,
+  .math-field {
+    height: 44px; /* slightly smaller for mobile */
+  }
+}

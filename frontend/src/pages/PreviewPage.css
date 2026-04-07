@@ -1,0 +1,252 @@
+.preview-page {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.preview-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.mode-tabs {
+  display: flex;
+  background: var(--white);
+  border-radius: 10px;
+  padding: 4px;
+  gap: 4px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--cream-dark);
+}
+
+.mode-tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 7px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: var(--font-body);
+  background: transparent;
+  color: var(--ink-muted);
+  border: none;
+  transition: all var(--transition);
+  white-space: nowrap;
+}
+
+.mode-tab:hover {
+  background: var(--cream);
+  color: var(--ink);
+}
+
+.mode-tab.active {
+  background: var(--ink);
+  color: var(--cream);
+}
+
+/* Paper */
+.paper-wrapper {
+  background: #888;
+  padding: 2rem;
+  border-radius: var(--radius-lg);
+  min-height: 60vh;
+}
+
+.paper {
+  background: white;
+  max-width: 750px;
+  margin: 0 auto;
+  padding: 48px 56px;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.3);
+  min-height: 600px;
+  font-family: 'DM Sans', sans-serif;
+  color: #1a1a2e;
+  border-radius: 2px;
+}
+
+.paper-header {
+  text-align: center;
+  border-bottom: 3px double #1a1a2e;
+  padding-bottom: 16px;
+  margin-bottom: 28px;
+}
+
+.paper-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1a1a2e;
+}
+
+.paper-subtitle {
+  font-size: 0.85rem;
+  color: #666;
+  margin-top: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.paper-meta {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 12px;
+  font-size: 0.78rem;
+  color: #555;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.section-label {
+  font-family: 'Playfair Display', serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin: 20px 0 14px;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.section-divider {
+  border: none;
+  border-top: 1px dashed #ccc;
+  margin: 20px 0;
+}
+
+.question-block {
+  margin-bottom: 18px;
+  page-break-inside: avoid;
+}
+
+.question-row {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.q-num {
+  font-weight: 700;
+  min-width: 28px;
+  font-size: 0.93rem;
+  padding-top: 1px;
+}
+
+.q-body {
+  flex: 1;
+}
+
+.q-text {
+  font-size: 0.93rem;
+  line-height: 1.65;
+  color: #1a1a2e;
+}
+
+.q-text-small {
+  font-size: 0.85rem;
+  color: #444;
+  margin-bottom: 4px;
+}
+
+.options-list {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.option-item {
+  display: flex;
+  gap: 8px;
+  font-size: 0.88rem;
+  align-items: baseline;
+  padding: 3px 6px;
+  border-radius: 4px;
+  transition: background 0.15s;
+}
+
+.option-item.correct-option {
+  background: #f0faf5;
+  font-weight: 600;
+}
+
+.option-label {
+  font-weight: 600;
+  min-width: 24px;
+  color: #555;
+}
+
+.correct-tick {
+  color: #27ae60;
+  font-weight: 700;
+  margin-left: 4px;
+}
+
+.answer-block {
+  margin-top: 8px;
+  padding: 8px 12px;
+  background: #f0faf5;
+  border-left: 3px solid #27ae60;
+  font-size: 0.86rem;
+  border-radius: 0 4px 4px 0;
+}
+
+.answer-label {
+  font-weight: 700;
+  color: #27ae60;
+}
+
+.answer-lines {
+  margin-top: 10px;
+}
+
+.answer-line {
+  border-bottom: 1px solid #ccc;
+  height: 22px;
+  margin-bottom: 4px;
+}
+
+/* Answer Key mode */
+.answers-section-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #1a1a2e;
+}
+
+.answer-key-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.no-answer {
+  font-size: 0.8rem;
+  color: #bbb;
+  font-style: italic;
+  margin-top: 4px;
+}
+
+.error-screen {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 50vh;
+  color: var(--ink-muted);
+}
+
+@media (max-width: 700px) {
+  .paper-wrapper { padding: 1rem; }
+  .paper { padding: 24px 20px; }
+  .preview-topbar { flex-direction: column; align-items: flex-start; }
+  .mode-tabs { width: 100%; }
+  .mode-tab { flex: 1; justify-content: center; font-size: 0.78rem; padding: 7px 8px; }
+}
+
+/* .q-text span {
+  white-space: pre-wrap;
+} */

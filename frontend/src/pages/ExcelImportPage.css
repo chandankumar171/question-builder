@@ -1,0 +1,566 @@
+.excel-page {
+  max-width: 820px;
+  margin: 0 auto;
+}
+
+.page-header {
+  margin-bottom: 2rem;
+}
+
+.page-title {
+  font-size: 2rem;
+  color: var(--ink);
+}
+
+.page-subtitle {
+  color: var(--ink-muted);
+  margin-top: 6px;
+}
+
+/* Step Cards */
+.step-card {
+  display: flex;
+  gap: 1.25rem;
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  padding: 1.75rem;
+  margin-bottom: 1.5rem;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--cream-dark);
+}
+
+.step-number {
+  width: 40px;
+  height: 40px;
+  background: var(--ink);
+  color: var(--cream);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1rem;
+  flex-shrink: 0;
+  font-family: var(--font-display);
+}
+
+.step-content { flex: 1; }
+
+.step-title {
+  font-size: 1.15rem;
+  margin-bottom: 6px;
+}
+
+.step-desc {
+  color: var(--ink-muted);
+  font-size: 0.9rem;
+  margin-bottom: 1.25rem;
+  line-height: 1.5;
+}
+
+/* Template options */
+.template-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 1rem;
+}
+
+.template-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  background: var(--cream);
+  border-radius: var(--radius);
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.template-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.template-info strong {
+  font-size: 0.93rem;
+  color: var(--ink);
+}
+
+.template-info span {
+  font-size: 0.78rem;
+  color: var(--ink-muted);
+  font-family: monospace;
+}
+
+.btn-download {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 16px;
+  background: var(--gold-pale);
+  color: #8a6820;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: var(--font-body);
+  transition: all var(--transition);
+  border: none;
+  white-space: nowrap;
+}
+
+.btn-download:hover { background: var(--gold-light); }
+.btn-download.mcq { background: #e0f5f5; color: var(--teal); }
+.btn-download.mcq:hover { background: #c8eeee; }
+
+.template-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 0.82rem;
+  color: var(--ink-muted);
+  background: var(--cream);
+  padding: 10px 14px;
+  border-radius: 8px;
+  line-height: 1.5;
+}
+
+.template-note svg { flex-shrink: 0; margin-top: 2px; }
+code {
+  background: var(--cream-dark);
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-size: 0.82em;
+}
+
+/* Upload Zone */
+.upload-zone {
+  border: 2px dashed var(--cream-dark);
+  border-radius: var(--radius-lg);
+  padding: 2.5rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all var(--transition);
+  background: var(--cream);
+}
+
+.upload-zone:hover {
+  border-color: var(--gold);
+  background: var(--gold-pale);
+}
+
+.upload-icon {
+  color: var(--gold);
+  margin-bottom: 1rem;
+}
+
+.upload-text {
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 4px;
+}
+
+.upload-sub {
+  color: var(--ink-muted);
+  font-size: 0.85rem;
+}
+
+.upload-filename {
+  margin-top: 10px;
+  font-size: 0.85rem;
+  color: var(--teal);
+  font-weight: 500;
+}
+
+.upload-uploading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  color: var(--ink-muted);
+}
+
+/* Errors */
+.errors-card {
+  background: #fdecea;
+  border: 1px solid #f5c6c2;
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.errors-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--red);
+  margin-bottom: 10px;
+}
+
+.errors-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.errors-list li {
+  font-size: 0.85rem;
+  color: #a93226;
+  padding-left: 16px;
+  position: relative;
+}
+
+.errors-list li::before { content: '•'; position: absolute; left: 0; }
+
+/* Parsed Questions */
+.parsed-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 1.5rem;
+  max-height: 500px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.parsed-card {
+  background: var(--cream);
+  border-radius: var(--radius);
+  padding: 1rem 1.25rem;
+  border-left: 3px solid var(--cream-dark);
+}
+
+.parsed-card.normal { border-left-color: var(--gold); }
+.parsed-card.mcq { border-left-color: var(--teal); }
+
+.parsed-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.parsed-num {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--ink-muted);
+}
+
+.parsed-header .icon-btn {
+  margin-left: auto;
+  width: 28px;
+  height: 28px;
+  background: transparent;
+  border-radius: 6px;
+}
+
+.parsed-question {
+  font-size: 0.9rem;
+  color: var(--ink);
+  line-height: 1.5;
+  margin-bottom: 6px;
+}
+
+.parsed-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.parsed-option {
+  font-size: 0.78rem;
+  padding: 3px 10px;
+  background: var(--white);
+  border-radius: 6px;
+  color: var(--ink-muted);
+  border: 1px solid var(--cream-dark);
+}
+
+.parsed-option.correct {
+  background: #f0faf5;
+  color: var(--green);
+  border-color: #a8dfc0;
+  font-weight: 600;
+}
+
+.parsed-answer {
+  font-size: 0.82rem;
+  color: var(--ink-muted);
+}
+
+.save-btn {
+  width: 100%;
+  justify-content: center;
+  padding: 14px;
+  font-size: 1rem;
+  border-radius: var(--radius);
+}
+
+/* Shared */
+.set-name-field label {
+  display: block;
+  font-weight: 600;
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-muted);
+  margin-bottom: 8px;
+}
+
+.set-name-input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid var(--cream-dark);
+  border-radius: var(--radius);
+  font-size: 1rem;
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--ink);
+  background: var(--cream);
+  transition: border-color var(--transition);
+  outline: none;
+}
+
+.set-name-input:focus { border-color: var(--gold); background: var(--white); }
+
+.q-type-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 99px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.q-type-badge.normal { background: var(--gold-pale); color: #8a6820; }
+.q-type-badge.mcq { background: #e0f5f5; color: var(--teal); }
+
+.icon-btn.delete:hover { background: #fdecea; color: var(--red); }
+
+@media (max-width: 600px) {
+  .step-card { flex-direction: column; }
+  .step-number { width: 32px; height: 32px; font-size: 0.85rem; }
+}
+
+
+
+
+
+
+
+
+/*new added css for excel import page*/
+/* .template-option.single {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 18px;
+  background: var(--cream);
+  border-radius: var(--radius);
+  border: 1.5px solid var(--cream-dark);
+}
+
+.template-option.single .template-info span {
+  font-family: monospace;
+  font-size: 0.75rem;
+  color: var(--teal);
+  word-break: break-all;
+}
+
+.template-option.single .btn-download {
+  align-self: flex-start;
+  padding: 10px 22px;
+  font-size: 0.9rem;
+}
+
+.fill-guide {
+  margin-top: 6px;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.fill-guide li {
+  font-size: 0.82rem;
+  color: var(--ink-muted);
+  line-height: 1.5;
+}
+.template-grid{
+  margin-top: 5px;
+} */
+
+
+/* ===== TEMPLATE GRID ===== */
+.template-grid {
+  margin-top: 10px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+/* ===== TEMPLATE BOX ===== */
+.template-box {
+  background: var(--cream);
+  border: 1.5px solid var(--cream-dark);
+  border-radius: var(--radius);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: all 0.25s ease;
+}
+
+.template-box:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+}
+
+/* ===== HEADER ===== */
+.template-box-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1rem;
+  margin-bottom: 10px;
+}
+
+.template-box-header.excel {
+  color: #1d6f42;
+}
+
+.template-box-header.word {
+  color: #2b579a;
+}
+
+/* ===== DESCRIPTION ===== */
+.template-box-desc {
+  font-size: 0.85rem;
+  color: var(--ink-muted);
+  line-height: 1.5;
+  margin-bottom: 12px;
+}
+
+/* ===== COLUMN TAGS ===== */
+.template-cols {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.template-cols code {
+  background: white;
+  border: 1px solid var(--cream-dark);
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 0.7rem;
+  color: var(--teal);
+  font-family: monospace;
+}
+
+/* ===== DOWNLOAD BUTTON ===== */
+.btn-download {
+  margin-top: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: none;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-download.excel {
+  background: #1d6f42;
+  color: white;
+}
+
+.btn-download.word {
+  background: #2b579a;
+  color: white;
+}
+
+.btn-download:hover {
+  opacity: 0.9;
+  transform: scale(1.03);
+}
+
+/* ===== WORD PREVIEW ===== */
+.word-format-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.wfp-block {
+  background: white;
+  border: 1px solid var(--cream-dark);
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.wfp-block pre {
+  margin: 6px 0 0;
+  font-size: 0.75rem;
+  font-family: monospace;
+  color: var(--ink);
+  white-space: pre-wrap;
+}
+
+/* ===== TAGS ===== */
+.wfp-tag {
+  font-size: 0.65rem;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 999px;
+}
+
+.normal-tag {
+  background: rgba(0, 128, 128, 0.1);
+  color: var(--teal);
+}
+
+.mcq-tag {
+  background: rgba(180, 120, 0, 0.12);
+  color: #b87900;
+}
+
+/* ===== RESPONSIVE ===== */
+
+/* Tablet */
+@media (max-width: 900px) {
+  .template-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .template-box {
+    padding: 16px;
+  }
+}
+
+/* Mobile */
+@media (max-width: 500px) {
+  .template-box-desc {
+    font-size: 0.8rem;
+  }
+
+  .template-cols code {
+    font-size: 0.65rem;
+    padding: 3px 6px;
+  }
+
+  .btn-download {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .wfp-block pre {
+    font-size: 0.7rem;
+  }
+}
