@@ -438,9 +438,9 @@ export default function BuilderPage() {
               <Eye size={16} /> Preview
             </button>
           )}
-          <button className="btn-primary gold" onClick={handleSave} disabled={saving}>
+          {/* <button className="btn-primary gold" onClick={handleSave} disabled={saving}>
             <Save size={16} /> {saving ? 'Saving...' : 'Save Set'}
-          </button>
+          </button> */}
         </div>
       </div>
 
@@ -548,6 +548,9 @@ export default function BuilderPage() {
         <button className="add-btn mcq" onClick={() => addQuestion('mcq')}>
           <Plus size={16} /> MCQ Question
         </button>
+        <button className="btn-primary gold" onClick={handleSave} disabled={saving}>
+            <Save size={16} /> {saving ? 'Saving...' : 'Save Set'}
+          </button>
       </div>
     </div>
   );
