@@ -70,6 +70,7 @@ function renderTextWithMath(text) {
         <head>
           <title>${set?.setName || 'Question Paper'}</title>
           <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+          <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
           <style>
             * { box-sizing: border-box; margin: 0; padding: 0; }
             body {

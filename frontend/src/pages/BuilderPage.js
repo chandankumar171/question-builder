@@ -1,7 +1,10 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { questionAPI } from '../utils/api';
-import { Plus, Trash2, ChevronUp, ChevronDown, Save, Eye, ArrowLeft, CheckCircle2, Keyboard } from 'lucide-react';
+import {
+  Plus, Trash2, ChevronUp, ChevronDown, Save, Eye,
+  ArrowLeft, CheckCircle2, Keyboard, Check, X,
+} from 'lucide-react';
 import toast from 'react-hot-toast';
 import './BuilderPage.css';
 import 'mathlive';
@@ -9,83 +12,142 @@ import 'mathlive';
 const emptyNormal = () => ({ type: 'normal', question: '', answer: '', options: { A:'', B:'', C:'', D:'' }, correctOption: '' });
 const emptyMCQ   = () => ({ type: 'mcq',    question: '', answer: '', options: { A:'', B:'', C:'', D:'' }, correctOption: '' });
 
-// ── MathField wrapper ────────────────────────────────────────────────────────
-// Renders the <math-field> web component properly in React.
-// Uses a ref + addEventListener so the value is never mangled by React's
-// synthetic event system, and the field is never unmounted (avoiding the
-// "space-eating / katex contamination" problem).
-function MathInput({ value, onChange, visible }) {
-  const ref = useRef(null);
+// ─────────────────────────────────────────────────────────────────────────────
+// MathKeyboardPopup
+// A floating panel with a fresh empty math-field.
+// The user types an expression → clicks Insert → it is wrapped in $...$ and
+// injected at the cursor position in the textarea.
+// The textarea value is NEVER passed into the math-field, so MathLive can
+// never mangle plain text.
+// ─────────────────────────────────────────────────────────────────────────────
+function MathKeyboardPopup({ onInsert, onClose }) {
+  const mathRef = useRef(null);
 
-  // Sync incoming value → math-field (only when it actually changes)
   useEffect(() => {
-    const el = ref.current;
+    const el = mathRef.current;
     if (!el) return;
-    if (el.value !== value) el.value = value;
-  }, [value]);
+    const t = setTimeout(() => el.focus?.(), 150);
+    return () => clearTimeout(t);
+  }, []);
 
-  // Listen for changes from the math-field → call onChange once
-  useEffect(() => {
-    const el = ref.current;
+  const handleInsert = () => {
+    const el = mathRef.current;
     if (!el) return;
-    const handler = () => onChange(el.value);
-    el.addEventListener('input', handler);
-    return () => el.removeEventListener('input', handler);
-  }, [onChange]);
+    const latex = el.value?.trim();
+    if (!latex) { toast.error('Enter a math expression first'); return; }
+    onInsert(latex);   // caller wraps in $...$
+    el.value = '';
+  };
+
+  // Allow Enter key to insert
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleInsert(); }
+    if (e.key === 'Escape') onClose();
+  };
 
   return (
-    <math-field
-      ref={ref}
-      class={`mathlive-field${visible ? '' : ' mathlive-hidden'}`}
-    />
+    <div className="math-popup" onKeyDown={handleKeyDown}>
+      <div className="math-popup-header">
+        <span className="math-popup-label">Math Keyboard — type expression, then click Insert</span>
+        <button className="math-popup-close" onClick={onClose} title="Close"><X size={16} /></button>
+      </div>
+      <math-field ref={mathRef} class="mathlive-popup-field" />
+      <div className="math-popup-footer">
+        <span className="math-popup-hint">Inserts as <code>$…$</code> at your cursor position</span>
+        <button className="math-insert-btn" onClick={handleInsert}>
+          <Check size={15} /> Insert
+        </button>
+      </div>
+    </div>
   );
 }
 
-// ── Question field with toggle ───────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// QuestionField
+// The textarea is ALWAYS the single source of truth.
+// The keyboard icon opens MathKeyboardPopup.
+// On Insert, the latex string is wrapped in $...$ and spliced into the
+// textarea at the saved cursor position.
+// ─────────────────────────────────────────────────────────────────────────────
 function QuestionField({ value, onChange }) {
-  const [mathMode, setMathMode] = useState(false);
+  const [showMath, setShowMath] = useState(false);
+  const textareaRef = useRef(null);
+  const cursorPos   = useRef({ start: 0, end: 0 });
+
+  // Save cursor whenever the textarea loses focus or the user clicks ⌨
+  const saveCursor = () => {
+    const el = textareaRef.current;
+    if (el) cursorPos.current = { start: el.selectionStart, end: el.selectionEnd };
+  };
+
+  const handleOpenMath = () => {
+    saveCursor();
+    setShowMath(true);
+  };
+
+  const handleInsert = useCallback((latex) => {
+    // Wrap the raw LaTeX in $ delimiters automatically
+    const snippet = `$${latex}$`;
+    const { start, end } = cursorPos.current;
+    const newValue = value.slice(0, start) + snippet + value.slice(end);
+    onChange(newValue);
+    setShowMath(false);
+
+    // Move textarea cursor to just after the inserted snippet
+    requestAnimationFrame(() => {
+      const el = textareaRef.current;
+      if (el) {
+        el.focus();
+        const pos = start + snippet.length;
+        el.setSelectionRange(pos, pos);
+      }
+    });
+  }, [value, onChange]);
 
   return (
     <div className="math-input-wrapper">
-      {/* <div className="input-with-icon"> */}
-
-        {/* Normal textarea — hidden (not unmounted) when math mode is on */}
+      <div className="question-input-row">
         <textarea
-          className={`q-textarea${mathMode ? ' field-hidden' : ''}`}
-          placeholder="Enter your question here..."
+          ref={textareaRef}
+          className="q-textarea"
+          placeholder="Type your question. Use ⌨ to insert math symbols."
           value={value}
           onChange={e => onChange(e.target.value)}
+          onBlur={saveCursor}
+          onMouseUp={saveCursor}
+          onKeyUp={saveCursor}
           rows={2}
         />
-
-        {/* Math field — always in DOM, shown/hidden via CSS */}
-        <MathInput
-          value={value}
-          onChange={onChange}
-          visible={mathMode}
-        />
-
         <button
           type="button"
-          className={`math-toggle-btn${mathMode ? ' active' : ''}`}
-          onClick={() => setMathMode(m => !m)}
-          title={mathMode ? 'Switch to plain text' : 'Use Math Keyboard'}
+          className={`math-toggle-btn${showMath ? ' active' : ''}`}
+          onClick={() => showMath ? setShowMath(false) : handleOpenMath()}
+          title="Insert math expression"
         >
           <Keyboard size={18} />
         </button>
       </div>
-    // </div>
+
+      {showMath && (
+        <MathKeyboardPopup
+          onInsert={handleInsert}
+          onClose={() => setShowMath(false)}
+        />
+      )}
+    </div>
   );
 }
 
-// ── Main page ────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// Main BuilderPage
+// ─────────────────────────────────────────────────────────────────────────────
 export default function BuilderPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [setName, setSetName]   = useState('');
+  const [setName, setSetName]     = useState('');
   const [questions, setQuestions] = useState([]);
-  const [saving, setSaving]     = useState(false);
-  const [loading, setLoading]   = useState(!!id);
+  const [saving, setSaving]       = useState(false);
+  const [loading, setLoading]     = useState(!!id);
 
   useEffect(() => {
     if (id) {
@@ -111,18 +173,18 @@ export default function BuilderPage() {
     setQuestions(arr);
   };
 
-  const updateQuestion = (idx, field, value) => {
+  const updateQuestion = (idx, field, val) => {
     setQuestions(prev => {
       const arr = [...prev];
-      arr[idx] = { ...arr[idx], [field]: value };
+      arr[idx] = { ...arr[idx], [field]: val };
       return arr;
     });
   };
 
-  const updateOption = (idx, key, value) => {
+  const updateOption = (idx, key, val) => {
     setQuestions(prev => {
       const arr = [...prev];
-      arr[idx] = { ...arr[idx], options: { ...arr[idx].options, [key]: value } };
+      arr[idx] = { ...arr[idx], options: { ...arr[idx].options, [key]: val } };
       return arr;
     });
   };
@@ -140,7 +202,6 @@ export default function BuilderPage() {
     if (questions.length === 0) return toast.error('Add at least one question');
     const bad = questions.findIndex(q => !q.question.trim());
     if (bad !== -1) return toast.error(`Question ${bad + 1} is empty`);
-
     setSaving(true);
     try {
       if (id) {
@@ -174,9 +235,6 @@ export default function BuilderPage() {
               <Eye size={16} /> Preview
             </button>
           )}
-          {/* <button className="btn-primary gold" onClick={handleSave} disabled={saving}>
-            <Save size={16} /> {saving ? 'Saving...' : 'Save Set'}
-          </button> */}
         </div>
       </div>
 
@@ -218,7 +276,6 @@ export default function BuilderPage() {
 
             <div className="field-group">
               <label>Question <span className="required">*</span></label>
-              {/* Each question gets its own QuestionField with its own mathMode state */}
               <QuestionField
                 value={q.question}
                 onChange={val => updateQuestion(idx, 'question', val)}
@@ -285,8 +342,8 @@ export default function BuilderPage() {
           <Plus size={16} /> MCQ Question
         </button>
         <button className="btn-primary gold" onClick={handleSave} disabled={saving}>
-            <Save size={16} /> {saving ? 'Saving...' : 'Save Set'}
-          </button>
+          <Save size={16} /> {saving ? 'Saving...' : 'Save Set'}
+        </button>
       </div>
     </div>
   );
