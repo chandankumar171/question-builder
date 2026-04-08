@@ -185,7 +185,8 @@ function renderTextWithMath(text) {
           <div className="paper-meta">
             <span>Total Questions: {totalQ}</span>
             <span>
-              Date: {new Date().toLocaleDateString()}
+              {/* Date: {new Date().toLocaleDateString()} */}
+              Date: {new Date().toLocaleDateString('en-GB')}
             </span>
           </div>
         </div>
@@ -271,8 +272,8 @@ function renderTextWithMath(text) {
                         {mode === 'with-answers' && q.answer && (
                           <div className="answer-block">
                             <span className="answer-label">Ans: </span>
-                            {q.answer}
-                            
+                            {/* {q.answer} */}
+                            {renderTextWithMath(q.answer)}
                           </div>
                         )}
 
