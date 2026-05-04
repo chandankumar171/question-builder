@@ -262,16 +262,57 @@
 
 
 /* ── Live preview below input ───────────────────────────────── */
+
 .live-preview {
-  margin-top: 8px;
-  padding: 10px;
+  margin-top: 10px;
+  padding: 12px;
   background: #f8fafc;
   border: 1px solid #e2e8f0;
-  border-radius: 6px;
-  font-size: 15px;
+  border-radius: 8px;
   line-height: 1.6;
 }
 
+/* math size */
 .live-preview .katex {
-  font-size: 1.1em;
+  font-size: 1.2em;
 }
+
+/* image styling */
+.preview-img {
+  display: block;
+  max-width: 100%;
+  margin-top: 8px;
+  border-radius: 6px;
+}
+
+
+/* delete image button */
+
+.img-delete-btn {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  /* background: red; */
+  color: rgb(0, 0, 0);
+  border: none;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.preview-img-wrapper {
+  display: inline-block;    /* not flex */
+  vertical-align: middle;
+  position: relative;
+  margin: 0 6px;
+}
+
+.preview-img {
+  display: inline-block;
+  max-width: 120px;
+  max-height: 80px;
+  vertical-align: middle;
+}
+

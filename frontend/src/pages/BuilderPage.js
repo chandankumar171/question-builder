@@ -11,18 +11,103 @@ import "./BuilderPage.css";
 import { InlineMath } from "react-katex";
 import "katex/dist/katex.min.css";
 
-function renderPreview(text) {
+// function renderPreview(text) {
+//   if (!text) return null;
+
+//   const parts = text.split(/(\$.*?\$)/g);
+
+//   return parts.map((part, i) => {
+//     if (part.startsWith("$") && part.endsWith("$")) {
+//       return <InlineMath key={i} math={part.slice(1, -1)} />;
+//     }
+//     return <span key={i}>{part}</span>;
+//   });
+// }
+
+
+function renderPreview(text, onDeleteImage) {
   if (!text) return null;
 
-  const parts = text.split(/(\$.*?\$)/g);
+  const parts = text.split(/(\[IMG:.*?\]|\$.*?\$|\\[a-zA-Z]+(?:\{.*?\})*)/g);
 
   return parts.map((part, i) => {
+    if (!part) return null;
+
+    // ✅ IMAGE
+    // if (part.startsWith("[IMG:")) {
+    //   const url = part.replace("[IMG:", "").replace("]", "");
+    //   return (
+    //     <img
+    //       key={i}
+    //       src={url}
+    //       alt=""
+    //       className="preview-img"
+    //     />
+    //   );
+    // }
+    // ✅ IMAGE (FIXED)
+//  if (part.startsWith("[IMG:")) {
+//       const match = part.match(/\[IMG:(.*?)\|\|\|(.*?)\]/);
+
+//       if (!match) return <span key={i}>{part}</span>;
+
+//       const url = match[2];
+
+//       return (
+//         <img
+//           key={i}
+//           src={url}
+//           alt=""
+//           className="preview-img"
+//         />
+//       );
+//     }
+
+
+if (part.startsWith("[IMG:")) {
+  const match = part.match(/\[IMG:(.*?)\|\|\|(.*?)\]/);
+
+  if (!match) return <span key={i}>{part}</span>;
+
+  const publicId = match[1];
+  const url = match[2];
+
+  return (
+    // <div key={i} className="preview-img-wrapper">
+    <span key={i} className="preview-img-wrapper">
+      <img src={url} alt="" className="preview-img" />
+
+      {/* ❌ DELETE BUTTON */}
+      <button
+        className="img-delete-btn"
+        onClick={() => onDeleteImage(part, publicId)}
+      >
+        ✕
+      </button>
+    </span>
+  );
+}
+
+
+
+    // ✅ $math$
     if (part.startsWith("$") && part.endsWith("$")) {
-      return <InlineMath key={i} math={part.slice(1, -1)} />;
+      return (
+        <InlineMath key={i} math={part.slice(1, -1)} />
+      );
     }
+
+    // ✅ \latex commands
+    if (part.startsWith("\\")) {
+      return <InlineMath key={i} math={part} />;
+    }
+
+    // ✅ normal text
     return <span key={i}>{part}</span>;
   });
 }
+
+
 
 // ─── Token: [IMG:publicId|||url] ─────────────────────────────────────────────
 // We embed both publicId (for deletion) and url (for display).
@@ -182,7 +267,7 @@ function MathKeyboardPopup({ onInsert, onClose }) {
     const t = setTimeout(() => {
       el.mathVirtualKeyboardPolicy = "manual";
       el.focus?.();
-      window.mathVirtualKeyboard?.show?.();
+      // window.mathVirtualKeyboard?.show?.();       
     }, 100);
     return () => {
       clearTimeout(t);
@@ -242,7 +327,7 @@ function MathKeyboardPopup({ onInsert, onClose }) {
       <math-field
         ref={mathRef}
         class="mathlive-field-pro"
-        virtual-keyboard-mode="onfocus"
+        // virtual-keyboard-mode="onfocus"
       />
 
       <div className="math-popup-footer">
@@ -288,9 +373,34 @@ function QuestionField({ value, onChange, singleLine = false, placeholder = "Typ
     onBlur: saveCursor, onMouseUp: saveCursor, onKeyUp: saveCursor,
   };
 
+  //delete image from question text
+//   const handleDeleteImage = (token, publicId) => {
+//   const newVal = value.replace(token, "");
+//   onChange(newVal);
+
+//   // OPTIONAL: delete from Cloudinary
+//   // imageAPI.delete(publicId);
+// };
+const handleDeleteImage = async (token, publicId) => {
+  try {
+    // 1. Remove from UI
+    const newVal = value.replace(token, "");
+    onChange(newVal);
+
+    // 2. Delete from Cloudinary
+    await imageAPI.delete(publicId);
+
+    toast.success("Image deleted");
+  } catch (err) {
+    toast.error("Failed to delete image");
+    console.error(err);
+  }
+};
+
   {value && (
   <div className="live-preview">
-    {renderPreview(value)}
+    {/* {renderPreview(value)} */}
+    {renderPreview(value, handleDeleteImage)}
   </div>
 )}
 
@@ -325,7 +435,7 @@ function QuestionField({ value, onChange, singleLine = false, placeholder = "Typ
 {/* ✅ LIVE PREVIEW */}
 {value && (
   <div className="live-preview">
-    {renderPreview(value)}
+    {renderPreview(value, handleDeleteImage)}
   </div>
 )}
 
