@@ -4,6 +4,7 @@ import { questionAPI } from '../utils/api';
 import { PlusCircle, Eye, Pencil, Trash2, BookOpen, FileQuestion } from 'lucide-react';
 import toast from 'react-hot-toast';
 import './HomePage.css';
+import axios from 'axios';
 
 export default function HomePage() {
   const [sets, setSets] = useState([]);
@@ -16,7 +17,7 @@ export default function HomePage() {
 
   const fetchSets = async () => {
     try {
-      const res = await questionAPI.getAll();
+      const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/questions`);
       setSets(res.data);
     } catch (err) {
       toast.error('Failed to load question sets');
@@ -85,7 +86,7 @@ export default function HomePage() {
                 </div>
                 <h3 className="set-name">{set.setName}</h3>
                 <p className="set-count">{set.questions.length} question{set.questions.length !== 1 ? 's' : ''}</p>
-                <p className="set-date">{new Date(set.createdAt).toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' })}</p>
+                <p className="set-date">{new Date(set.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
                 <div className="set-actions">
                   <button className="icon-btn preview" title="Preview" onClick={() => navigate(`/preview/${set._id}`)}>
                     <Eye size={16} />
