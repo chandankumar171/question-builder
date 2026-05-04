@@ -8,6 +8,21 @@ import {
 import toast from "react-hot-toast";
 import "mathlive";
 import "./BuilderPage.css";
+import { InlineMath } from "react-katex";
+import "katex/dist/katex.min.css";
+
+function renderPreview(text) {
+  if (!text) return null;
+
+  const parts = text.split(/(\$.*?\$)/g);
+
+  return parts.map((part, i) => {
+    if (part.startsWith("$") && part.endsWith("$")) {
+      return <InlineMath key={i} math={part.slice(1, -1)} />;
+    }
+    return <span key={i}>{part}</span>;
+  });
+}
 
 // ─── Token: [IMG:publicId|||url] ─────────────────────────────────────────────
 // We embed both publicId (for deletion) and url (for display).
@@ -273,6 +288,12 @@ function QuestionField({ value, onChange, singleLine = false, placeholder = "Typ
     onBlur: saveCursor, onMouseUp: saveCursor, onKeyUp: saveCursor,
   };
 
+  {value && (
+  <div className="live-preview">
+    {renderPreview(value)}
+  </div>
+)}
+
   return (
     <div className="qf-wrapper">
       <div className="qf-input-row">
@@ -293,12 +314,27 @@ function QuestionField({ value, onChange, singleLine = false, placeholder = "Typ
         </div>
       </div>
 
-      {showMath && (
+      {/* {showMath && (
         <MathKeyboardPopup
           onInsert={insertMath}
           onClose={() => setShowMath(false)}
         />
-      )}
+      )} */}
+      
+
+{/* ✅ LIVE PREVIEW */}
+{value && (
+  <div className="live-preview">
+    {renderPreview(value)}
+  </div>
+)}
+
+{showMath && (
+  <MathKeyboardPopup
+    onInsert={insertMath}
+    onClose={() => setShowMath(false)}
+  />
+)}
     </div>
   );
 }

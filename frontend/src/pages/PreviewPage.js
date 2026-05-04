@@ -127,9 +127,9 @@ export default function PreviewPage() {
           <button className={`mode-tab ${mode === 'with-answers' ? 'active' : ''}`} onClick={() => setMode('with-answers')}>
             <CheckSquare size={15} /> With Answers
           </button>
-          <button className={`mode-tab ${mode === 'answers-only' ? 'active' : ''}`} onClick={() => setMode('answers-only')}>
+          {/* <button className={`mode-tab ${mode === 'answers-only' ? 'active' : ''}`} onClick={() => setMode('answers-only')}>
             <EyeOff size={15} /> Answer Key
-          </button>
+          </button> */}
         </div>
         <button className="btn-primary" onClick={handlePrint}><Printer size={16} /> Print / PDF</button>
       </div>
