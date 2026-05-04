@@ -63,15 +63,15 @@
 
 import axios from 'axios';
 
-const API = axios.create({ baseURL: '/api' });
+const API = axios.create({ baseURL: `${process.env.REACT_APP_API_URL}/api` });
 
 // ── Question sets ─────────────────────────────────────────────────────────────
 export const questionAPI = {
-  getAll:  ()         => API.get('/questions'),
-  getOne:  (id)       => API.get(`/questions/${id}`),
-  create:  (data)     => API.post('/questions', data),
-  update:  (id, data) => API.put(`/questions/${id}`, data),
-  delete:  (id)       => API.delete(`/questions/${id}`),
+  getAll: () => API.get('/questions'),
+  getOne: (id) => API.get(`/questions/${id}`),
+  create: (data) => API.post('/questions', data),
+  update: (id, data) => API.put(`/questions/${id}`, data),
+  delete: (id) => API.delete(`/questions/${id}`),
 };
 
 // ── Images (Cloudinary via backend) ──────────────────────────────────────────
@@ -102,9 +102,9 @@ export const imageAPI = {
 // ── Excel / Word ──────────────────────────────────────────────────────────────
 const triggerDownload = async (request, filename) => {
   const response = await request;
-  const url  = window.URL.createObjectURL(new Blob([response.data]));
+  const url = window.URL.createObjectURL(new Blob([response.data]));
   const link = document.createElement('a');
-  link.href  = url;
+  link.href = url;
   link.setAttribute('download', filename);
   document.body.appendChild(link);
   link.click();
@@ -113,7 +113,7 @@ const triggerDownload = async (request, filename) => {
 };
 
 export const excelAPI = {
-  downloadTemplate:     () => triggerDownload(API.get('/excel/template',      { responseType: 'blob' }), 'questions_template.xlsx'),
+  downloadTemplate: () => triggerDownload(API.get('/excel/template', { responseType: 'blob' }), 'questions_template.xlsx'),
   downloadWordTemplate: () => triggerDownload(API.get('/excel/word-template', { responseType: 'blob' }), 'word_question_format.txt'),
   parseFile: (file) => {
     const form = new FormData();

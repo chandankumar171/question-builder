@@ -4,7 +4,6 @@ import { questionAPI } from '../utils/api';
 import { PlusCircle, Eye, Pencil, Trash2, BookOpen, FileQuestion } from 'lucide-react';
 import toast from 'react-hot-toast';
 import './HomePage.css';
-import axios from 'axios';
 
 export default function HomePage() {
   const [sets, setSets] = useState([]);
@@ -17,7 +16,7 @@ export default function HomePage() {
 
   const fetchSets = async () => {
     try {
-      const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/questions`);
+      const res = await questionAPI.getAll();
       setSets(res.data);
     } catch (err) {
       toast.error('Failed to load question sets');
