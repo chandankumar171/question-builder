@@ -250,3 +250,25 @@
 /* .q-text span {
   white-space: pre-wrap;
 } */
+
+
+.answer-lines {
+    margin-top: 12px;
+  }
+
+  /* .answer-line {
+    border-bottom: 1px solid #000;
+    height: 24px;
+    margin-bottom: 8px;
+  } */
+   .answer-line {
+  border-bottom: 1px solid black;
+  height: 24px;
+  margin-bottom: 8px;
+  display: block;
+}
+
+  .question-block {
+    margin-bottom: 20px;
+    page-break-inside: avoid;
+  }

@@ -1,297 +1,218 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { questionAPI } from '../utils/api';
-import { ArrowLeft, Printer, Eye, EyeOff, CheckSquare } from 'lucide-react';
+import { ArrowLeft, Printer, Eye, CheckSquare, EyeOff } from 'lucide-react';
 import toast from 'react-hot-toast';
 import './PreviewPage.css';
-// import { BlockMath } from 'react-katex';
 import { InlineMath } from 'react-katex';
+import 'katex/dist/katex.min.css';
 
-export default function PreviewPage() {
-  const { id } = useParams();
-  const navigate = useNavigate();
-  const [set, setSet] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [mode, setMode] = useState('questions'); // 'questions' | 'with-answers' | 'answers-only'
-  const printRef = useRef();
+// ─── Token parsers ─────────────────────────────────────────────────────────
+// Token format written by BuilderPage: [IMG:publicId|||https://...]
+// Older format (fallback):             [IMG:https://...]
+function parseImgToken(tok) {
+  const inner = tok.slice(5, -1); // strip [IMG: and ]
+  if (inner.includes('|||')) {
+    return inner.split('|||')[1]; // new format → get url after |||
+  }
+  // old format → inner IS the url
+  return inner;
+}
 
-  useEffect(() => {
-    questionAPI.getOne(id)
-      .then(res => setSet(res.data))
-      .catch(() => toast.error('Failed to load question set'))
-      .finally(() => setLoading(false));
-  }, [id]);
- 
-  // Helper to render text with inline math
-//   function renderTextWithMath(text) {
-//   const parts = text.split(/(\$.*?\$)/g);
-
-//   return parts.map((part, i) => {
-//     if (part.startsWith('$') && part.endsWith('$')) {
-//       return <InlineMath key={i} math={part.slice(1, -1)} />;
-//     }
-//     return <span key={i}>{part}</span>;
-//   });
-// }
-
-function renderTextWithMath(text) {
+function renderContent(text) {
   if (!text) return null;
-
-  // Split by $...$ OR LaTeX commands
-  const parts = text.split(/(\$.*?\$|\\[a-zA-Z]+(?:\{.*?\})*)/g);
-
+  // Split on image tokens and math tokens
+  const parts = text.split(/(\[IMG:[^\]]+\]|\$[^$]+\$)/g);
   return parts.map((part, i) => {
     if (!part) return null;
-
-    // Case 1: $...$
+    if (part.startsWith('[IMG:')) {
+      const url = parseImgToken(part);
+      return (
+        <img
+          key={i}
+          src={url}
+          alt=""
+          className="q-img"
+          style={{ display:'block', maxWidth:'100%', maxHeight:'280px', objectFit:'contain', margin:'8px 0', borderRadius:'6px', border:'1px solid #e0e0e0' }}
+        />
+      );
+    }
     if (part.startsWith('$') && part.endsWith('$')) {
-      return <InlineMath key={i} math={part.slice(1, -1)} />;
+      try { return <InlineMath key={i} math={part.slice(1, -1)} />; }
+      catch { return <code key={i}>{part}</code>; }
     }
-
-    // Case 2: LaTeX commands from MathLive
-    if (part.startsWith('\\')) {
-      return <InlineMath key={i} math={part} />;
-    }
-
-    // Case 3: Normal text (preserve spaces)
     return <span key={i}>{part}</span>;
   });
 }
 
+export default function PreviewPage() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const location = useLocation();
 
+  const [set, setSet] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [mode, setMode] = useState('questions');
+  const printRef = useRef();
 
+  useEffect(() => {
+    // Use data passed from builder for instant load
+    if (location.state?.data) {
+      setSet(location.state.data);
+      setLoading(false);
+      return;
+    }
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const res = await questionAPI.getOne(id);
+        setSet(res.data);
+      } catch {
+        toast.error('Failed to load question set');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, [id, location.state]);
 
   const handlePrint = () => {
-    const printContents = printRef.current.innerHTML;
+    const content = printRef.current.innerHTML;
     const win = window.open('', '_blank');
-    win.document.write(`
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <title>${set?.setName || 'Question Paper'}</title>
-          <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-          <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
-          <style>
-            * { box-sizing: border-box; margin: 0; padding: 0; }
-            body {
-              font-family: 'DM Sans', sans-serif;
-              font-size: 12pt;
-              color: #1a1a2e;
-              background: white;
-            }
-            .paper { padding: 40px 50px; max-width: 800px; margin: 0 auto; }
-            .paper-header { text-align: center; border-bottom: 3px double #1a1a2e; padding-bottom: 16px; margin-bottom: 24px; }
-            .paper-title { font-family: 'Playfair Display', serif; font-size: 20pt; font-weight: 700; }
-            .paper-subtitle { font-size: 10pt; color: #666; margin-top: 4px; }
-            .paper-meta { display: flex; justify-content: space-between; margin-top: 10px; font-size: 10pt; }
-            .question-block { margin-bottom: 20px; page-break-inside: avoid; }
-            .question-row { display: flex; gap: 10px; }
-            .q-num { font-weight: 700; min-width: 30px; }
-            .q-text { flex: 1; line-height: 1.6; }
-            .options-list { margin: 8px 0 0 40px; }
-            .option-item { display: flex; gap: 8px; margin-bottom: 4px; }
-            .option-label { font-weight: 600; min-width: 20px; }
-            .answer-block { margin: 6px 0 0 40px; padding: 8px 12px; background: #f0faf5; border-left: 3px solid #27ae60; }
-            .answer-label { font-weight: 700; color: #27ae60; }
-            .answer-lines { margin: 10px 0 0 40px; }
-            .answer-line { border-bottom: 1px solid #ccc; height: 20px; margin-bottom: 6px; }
-            .answers-section-title { font-size: 16px; font-weight: bold; margin-bottom: 16px; }
-          </style>
-        </head>
-        <body>
-          ${printContents}
-        </body>
-      </html>
-    `);
+    win.document.write(`<!DOCTYPE html><html>
+      <head>
+        <title>${set?.setName || 'Question Paper'}</title>
+        <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@400;600&display=swap" rel="stylesheet">
+        <link href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" rel="stylesheet">
+        <style>
+          *{box-sizing:border-box;margin:0;padding:0}
+          body{font-family:'DM Sans',sans-serif;font-size:12pt;color:#1a1a2e;background:white;padding:40px 50px;max-width:800px;margin:0 auto}
+          .paper-title{font-family:'Playfair Display',serif;font-size:20pt;font-weight:700;text-align:center}
+          .paper-header{text-align:center;border-bottom:3px double #1a1a2e;padding-bottom:14px;margin-bottom:22px}
+          .paper-meta{display:flex;justify-content:space-between;margin-top:10px;font-size:10pt;color:#555;flex-wrap:wrap;gap:4px}
+          .question-block{margin-bottom:20px;page-break-inside:avoid}
+          .question-row{display:flex;gap:10px}
+          .q-num{font-weight:700;min-width:28px;flex-shrink:0;padding-top:1px}
+          .q-body{flex:1;line-height:1.65}
+          .q-img{display:block;max-width:100%;max-height:260px;object-fit:contain;margin:8px 0;border-radius:5px;border:1px solid #ddd}
+          .options-list{margin-top:8px;display:flex;flex-direction:column;gap:4px}
+          .option-item{display:flex;gap:8px;font-size:0.9rem}
+          .option-label{font-weight:700;min-width:26px;color:#555;flex-shrink:0}
+          .correct-tick{color:#27ae60;margin-left:5px;font-weight:700}
+          .answer-block{margin-top:8px;padding:8px 12px;background:#f0faf5;border-left:3px solid #27ae60;border-radius:0 4px 4px 0;font-size:0.87rem}
+          .answer-label{font-weight:700;color:#27ae60}
+          .answer-line{border-bottom:1px solid #aaa;height:24px;margin-bottom:6px}
+          @media print{body{print-color-adjust:exact;-webkit-print-color-adjust:exact}.answer-block{background:#f0faf5!important}}
+        </style>
+      </head>
+      <body>${content}</body>
+    </html>`);
     win.document.close();
     win.focus();
-    setTimeout(() => {
-      win.print();
-      win.close();
-    }, 500);
+    setTimeout(() => { win.print(); win.close(); }, 600);
   };
 
-  if (loading) return <div className="loading-screen"><p>Loading preview...</p></div>;
-  if (!set) return <div className="error-screen"><p>Question set not found.</p></div>;
-
-  const totalQ = set.questions.length;
+  if (loading) return <div className="loading-screen"><div className="loading-spinner" /><p>Loading...</p></div>;
+  if (!set) return <div className="error-screen"><p>Not found</p></div>;
 
   return (
-    <div className="preview-page fade-in">
-      
-      {/* Top Controls */}
-      {/* <div className="preview-topbar">
-        <button className="back-btn" onClick={() => navigate('/')}>
-          <ArrowLeft size={18} /> Back
-        </button>
-
+    <div className="preview-page">
+      {/* Top bar */}
+      <div className="preview-topbar">
+        <button className="back-btn" onClick={() => navigate('/')}><ArrowLeft size={18} /> Back</button>
         <div className="mode-tabs">
-          <button onClick={() => setMode('questions')}>
+          <button className={`mode-tab ${mode === 'questions'    ? 'active' : ''}`} onClick={() => setMode('questions')}>
             <Eye size={15} /> Questions
           </button>
-          <button onClick={() => setMode('with-answers')}>
+          <button className={`mode-tab ${mode === 'with-answers' ? 'active' : ''}`} onClick={() => setMode('with-answers')}>
             <CheckSquare size={15} /> With Answers
           </button>
-          <button onClick={() => setMode('answers-only')}>
+          <button className={`mode-tab ${mode === 'answers-only' ? 'active' : ''}`} onClick={() => setMode('answers-only')}>
             <EyeOff size={15} /> Answer Key
           </button>
         </div>
-
-        <button onClick={handlePrint}>
-          <Printer size={16} /> Print
-        </button>
-      </div> */}
-
-      <div className="preview-topbar">
-  <button className="back-btn" onClick={() => navigate('/')}>
-    <ArrowLeft size={18} /> Back
-  </button>
-
-  <div className="mode-tabs">
-    <button
-      className={`mode-tab ${mode === 'questions' ? 'active' : ''}`}
-      onClick={() => setMode('questions')}
-    >
-      <Eye size={15} /> Questions Only
-    </button>
-
-    <button
-      className={`mode-tab ${mode === 'with-answers' ? 'active' : ''}`}
-      onClick={() => setMode('with-answers')}
-    >
-      <CheckSquare size={15} /> With Answers
-    </button>
-
-    {/* <button
-      className={`mode-tab ${mode === 'answers-only' ? 'active' : ''}`}
-      onClick={() => setMode('answers-only')}
-    >
-      <EyeOff size={15} /> Answer Key
-    </button> */}
-  </div>
-
-  <button className="btn-primary" onClick={handlePrint}>
-    <Printer size={16} /> Print / PDF
-  </button>
-</div>
+        <button className="btn-primary" onClick={handlePrint}><Printer size={16} /> Print / PDF</button>
+      </div>
 
       {/* Paper */}
-      <div className="paper" ref={printRef}>
-        
-        {/* Header */}
-        <div className="paper-header">
-          <div className="paper-title">{set.setName}</div>
-          <div className="paper-subtitle">Question Paper</div>
-          <div className="paper-meta">
-            <span>Total Questions: {totalQ}</span>
-            <span>
-              {/* Date: {new Date().toLocaleDateString()} */}
-              Date: {new Date().toLocaleDateString('en-GB')}
-            </span>
+      <div className="paper-wrapper">
+        <div className="paper" ref={printRef}>
+          <div className="paper-header">
+            <div className="paper-title">{set.setName}</div>
+            <div className="paper-meta">
+              <span>Total Questions: {set.questions.length}</span>
+              <span>Date: {new Date().toLocaleDateString('en-GB')}</span>
+            </div>
           </div>
+
+          {/* All questions — simple sequential numbering, no sections */}
+          {set.questions.map((q, i) => (
+            <div key={i} className="question-block">
+              <div className="question-row">
+                <span className="q-num">{i + 1}.</span>
+                <div className="q-body">
+
+                  {/* Question text + images */}
+                  {mode !== 'answers-only' && (
+                    <div className="q-text">{renderContent(q.question)}</div>
+                  )}
+
+                  {/* MCQ options */}
+                  {q.type === 'mcq' && mode !== 'answers-only' && (
+                    <div className="options-list">
+                      {['A','B','C','D'].map(k => {
+                        if (!q.options?.[k]) return null;
+                        const isCorrect = mode === 'with-answers' && q.correctOption === k;
+                        return (
+                          <div key={k} className={`option-item${isCorrect ? ' correct-option' : ''}`}>
+                            <span className="option-label">({k})</span>
+                            <span>
+                              {renderContent(q.options[k])}
+                              {isCorrect && <span className="correct-tick">✓</span>}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  {/* MCQ answer */}
+                  {q.type === 'mcq' && mode !== 'questions' && (
+                    <div className="answer-block">
+                      <span className="answer-label">Answer: </span>
+                      {q.correctOption
+                        ? <>({q.correctOption}) {renderContent(q.options?.[q.correctOption])}</>
+                        : <span style={{color:'#bbb',fontStyle:'italic'}}>No answer selected</span>
+                      }
+                    </div>
+                  )}
+
+                  {/* Normal question answer / lines */}
+                  {q.type === 'normal' && mode === 'with-answers' && (
+                    <div className="answer-block">
+                      <span className="answer-label">Answer: </span>
+                      {renderContent(q.answer) || <span style={{color:'#bbb',fontStyle:'italic'}}>No answer provided</span>}
+                    </div>
+                  )}
+
+                  {q.type === 'normal' && mode === 'answers-only' && (
+                    <div className="answer-block">
+                      <span className="answer-label">Q{i+1}: </span>
+                      {renderContent(q.answer) || <span style={{color:'#bbb',fontStyle:'italic'}}>No answer</span>}
+                    </div>
+                  )}
+
+                  {q.type === 'normal' && mode === 'questions' && (
+                    <div className="answer-lines">
+                      {[0,1,2,3].map(j => <div key={j} className="answer-line" />)}
+                    </div>
+                  )}
+
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
-
-        {/* Answer Key Mode */}
-        {mode === 'answers-only' ? (
-          <div>
-            <div className="answers-section-title">Answer Key</div>
-
-            {set.questions.map((q, idx) => (
-              <div key={idx} className="question-block">
-                <div className="question-row">
-                  <span className="q-num">{idx + 1}.</span>
-
-                  <div>
-                    <div>{q.question}</div>
-
-                    {(q.answer || q.correctOption) ? (
-                      <div className="answer-block">
-                        <span className="answer-label">Answer: </span>
-                        {q.type === 'mcq'
-                          ? `(${q.correctOption}) ${q.options?.[q.correctOption] || ''}`
-                          : q.answer}
-                      </div>
-                    ) : (
-                      <div>No answer provided</div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-
-          /* Questions Mode */
-          <div>
-            {set.questions.map((q, idx) => (
-              <div className="question-block" key={idx}>
-                <div className="question-row">
-                  <span className="q-num">{idx + 1}.</span>
-
-                  <div className="q-body">
-                    {/* <div className="q-text">{q.question}</div> */}
-                    {/* <div className="q-text">
-  <InlineMath math={q.question} />
-</div> */}
-                    <div className="q-text">
-  {renderTextWithMath(q.question)}
-</div>
-
-                    {/* MCQ */}
-                    {q.type === 'mcq' && (
-                      <>
-                        <div className="options-list">
-                          {['A', 'B', 'C', 'D'].map(key => (
-                            q.options?.[key] && (
-                              <div key={key} className="option-item">
-                                <span className="option-label">({key})</span>
-                                {/* <span>{q.options[key]}</span> */}
-                                  <span>{renderTextWithMath(q.options[key])}</span>
-
-                                {mode === 'with-answers' && q.correctOption === key && (
-                                  <span> ✓</span>
-                                )}
-                              </div>
-                            )
-                          ))}
-                        </div>
-
-                        {mode === 'with-answers' && q.correctOption && (
-                          <div className="answer-block">
-                            <span className="answer-label">Ans: </span>
-                            {/* ({q.correctOption}) {q.options?.[q.correctOption]} */}
-                            ({q.correctOption}) {renderTextWithMath(q.options?.[q.correctOption])}
-                          </div>
-                        )}
-                      </>
-                    )}
-
-                    {/* NORMAL */}
-                    {q.type === 'normal' && (
-                      <>
-                        {mode === 'with-answers' && q.answer && (
-                          <div className="answer-block">
-                            <span className="answer-label">Ans: </span>
-                            {/* {q.answer} */}
-                            {renderTextWithMath(q.answer)}
-                          </div>
-                        )}
-
-                        {mode === 'questions' && (
-                          <div className="answer-lines">
-                            <div className="answer-line" />
-                            <div className="answer-line" />
-                            <div className="answer-line" />
-                          </div>
-                        )}
-                      </>
-                    )}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
       </div>
     </div>
   );
